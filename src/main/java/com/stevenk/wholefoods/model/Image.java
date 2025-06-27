@@ -1,6 +1,7 @@
 package com.stevenk.wholefoods.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class Image {
     private String filetype;
 
     @Lob
+    @JsonIgnore
     private Blob image;
     private String url;
 

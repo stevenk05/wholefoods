@@ -1,6 +1,5 @@
 package com.stevenk.wholefoods.controller;
 
-import com.stevenk.wholefoods.dto.ProductDTO;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
 import com.stevenk.wholefoods.model.Category;
 import com.stevenk.wholefoods.model.Product;
@@ -25,9 +24,15 @@ public class ProductController {
 
     @GetMapping("/all")
     ResponseEntity<ApiResponse> getAllProducts(){
+    try {
         List<Product> products = prodService.getAllProducts();
         return ResponseEntity.ok(new ApiResponse("Success", products));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+            .body(new ApiResponse("Error retrieving products: " + e.getMessage(), null));
     }
+}
 
     @GetMapping("/{id}/getPRODbyID")
     public ResponseEntity<ApiResponse> getProductById(@PathVariable Long id) {
