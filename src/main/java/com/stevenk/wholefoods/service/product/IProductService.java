@@ -1,5 +1,6 @@
 package com.stevenk.wholefoods.service.product;
 
+import com.stevenk.wholefoods.dto.ProductDTO;
 import com.stevenk.wholefoods.model.Product;
 import com.stevenk.wholefoods.requests.AddProductRequest;
 import com.stevenk.wholefoods.requests.ProductUpdateRequest;
@@ -18,4 +19,8 @@ public interface IProductService {
     List<Product> getProductsByName (String name);
     List<Product> getProductsByBrandAndName (String brand, String name);
     Long countProductsByBrandAndName (String brand, String name);
+
+    List<ProductDTO> getConvertedProducts(List<Product> products);
+
+    ProductDTO convertToDTO(Product product);
 }

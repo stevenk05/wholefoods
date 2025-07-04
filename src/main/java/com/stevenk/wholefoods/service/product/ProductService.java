@@ -1,14 +1,19 @@
 package com.stevenk.wholefoods.service.product;
 
+import com.stevenk.wholefoods.dto.ImageDTO;
+import com.stevenk.wholefoods.dto.ProductDTO;
 import com.stevenk.wholefoods.exceptions.ProductNotFoundException;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
+import com.stevenk.wholefoods.model.Image;
 import com.stevenk.wholefoods.model.Product;
 import com.stevenk.wholefoods.model.Category;
 import com.stevenk.wholefoods.repository.CategoryRepository;
+import com.stevenk.wholefoods.repository.ImageRepository;
 import com.stevenk.wholefoods.repository.ProductRepository;
 import com.stevenk.wholefoods.requests.AddProductRequest;
 import com.stevenk.wholefoods.requests.ProductUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +27,8 @@ public class ProductService implements IProductService {
 
     private final ProductRepository prodRepo;
     private final CategoryRepository catRepo;
+    private final ModelMapper modelMapper;
+    private final ImageRepository imgRepo;
 
     @Override
     public Product addProduct(AddProductRequest request) {
@@ -113,5 +120,20 @@ public class ProductService implements IProductService {
     @Override
     public Long countProductsByBrandAndName(String brand, String name) {
         return prodRepo.countByBrandAndName(brand, name);
+    }
+
+    @Override
+    public List<ProductDTO> getConvertedProducts(List<Product> products) {
+        return products.stream().map(this::convertToDTO).toList();
+    }
+
+    @Override
+    public ProductDTO convertToDTO(Product product) {
+        ProductDTO DTO = modelMapper.map(product, ProductDTO.class);
+        List<Image> images = imgRepo.findByProductId(product.getId());
+        List<ImageDTO> imageDTOS = images.stream()
+                .map(image -> modelMapper.map(image, ImageDTO.class))
+                .toList();
+        return DTO;
     }
 }
