@@ -12,7 +12,7 @@
 	<artifactId>wholefoods</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>wholefoods</name>
-	<description>shopping cart app to practice my springboot skills</description>
+	<description>shopping cart app to practice springboot</description>
 	<url/>
 	<licenses>
 		<license/>
