@@ -1,6 +1,5 @@
 package com.stevenk.wholefoods.requests;
 
-import com.stevenk.wholefoods.model.Category;
 import lombok.Data;
 
 @Data

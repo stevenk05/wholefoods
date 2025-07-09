@@ -60,7 +60,7 @@ public class CategoryController {
     }
 
 
-    @GetMapping("/{id}/delCAT")
+    @DeleteMapping("/{id}/delCAT")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id) {
         try {
             catService.deleteCategory(id);

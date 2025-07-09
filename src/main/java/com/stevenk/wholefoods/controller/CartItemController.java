@@ -3,10 +3,13 @@ package com.stevenk.wholefoods.controller;
 import com.stevenk.wholefoods.exceptions.ProductNotFoundException;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
 import com.stevenk.wholefoods.model.Cart;
+import com.stevenk.wholefoods.model.User;
 import com.stevenk.wholefoods.repository.CartRepository;
 import com.stevenk.wholefoods.response.ApiResponse;
 import com.stevenk.wholefoods.service.cart.ICartItemService;
 import com.stevenk.wholefoods.service.cart.ICartService;
+import com.stevenk.wholefoods.service.user.IUserService;
+import com.stevenk.wholefoods.service.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +25,22 @@ public class CartItemController {
     private final ICartItemService ciService;
     private final ICartService cartService;
     private final CartRepository cartRepo;
+    private final UserService userService;
 
     @PostMapping("/item/add")
-    public ResponseEntity<ApiResponse> addCartItem(@RequestParam Long prodId,
-                                             @RequestParam(required = false) Long cartId,
-                                             @RequestParam Integer quantity) {
+    public ResponseEntity<ApiResponse> addCartItem(@RequestParam(required = false) Long cartId,
+                                                   @RequestParam Long prodId,
+                                                   @RequestParam Integer quantity) {
         try {
-            if (cartId == null) {
-                cartId = cartService.initializeCart();
+            User user = userService.getUserById(1L);
+            Cart cart = cartService.getCartByUserId(user.getId());
+            if (cart == null) {
+                cart = cartService.initializeCart(user);
             }
-            ciService.addItem(cartId, prodId, quantity);
+
+            Long finalCartId = cartId != null ? cartId : cart.getId();
+
+            ciService.addItem(finalCartId | cart.getId(), prodId, quantity);
             return ResponseEntity.ok(new ApiResponse("Item added to cart", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

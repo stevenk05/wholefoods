@@ -1,5 +1,6 @@
 package com.stevenk.wholefoods.controller;
 
+import com.stevenk.wholefoods.dto.CartDTO;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
 import com.stevenk.wholefoods.model.Cart;
 import com.stevenk.wholefoods.response.ApiResponse;
@@ -22,7 +23,7 @@ public class CartController {
     @GetMapping("/show/{id}")
     public ResponseEntity<ApiResponse> getCart(@PathVariable Long id) {
         try {
-            Cart cart = cartService.getCart(id);
+            CartDTO cart = cartService.convertToCartDTO(cartService.getCart(id));
             return ResponseEntity.ok(new ApiResponse("Found.", cart));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));

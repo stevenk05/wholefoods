@@ -1,5 +1,6 @@
 package com.stevenk.wholefoods.service.cart;
 
+import com.stevenk.wholefoods.dto.CartDTO;
 import com.stevenk.wholefoods.exceptions.ProductNotFoundException;
 import com.stevenk.wholefoods.model.Cart;
 import com.stevenk.wholefoods.model.CartItem;

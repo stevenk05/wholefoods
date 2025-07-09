@@ -2,6 +2,7 @@ package com.stevenk.wholefoods.service.product;
 
 import com.stevenk.wholefoods.dto.ImageDTO;
 import com.stevenk.wholefoods.dto.ProductDTO;
+import com.stevenk.wholefoods.exceptions.AlreadyExistsException;
 import com.stevenk.wholefoods.exceptions.ProductNotFoundException;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
 import com.stevenk.wholefoods.model.Image;
@@ -32,12 +33,22 @@ public class ProductService implements IProductService {
 
     @Override
     public Product addProduct(AddProductRequest request) {
+
+        if (productExists(request.getBrand(), request.getName())) {
+            throw new AlreadyExistsException
+                    ("Product with brand " + request.getBrand() + " and name " + request.getName() + " already exists.");
+        }
+
         Category category = Optional.ofNullable(catRepo.findByName(request.getCategory()))
                 .orElseGet(() -> {
                     Category newCategory = new Category(request.getCategory());
                     return catRepo.save(newCategory);
                 });
-    return prodRepo.save(createProductFromRequest(request, category));
+        return prodRepo.save(createProductFromRequest(request, category));
+    }
+
+    private boolean productExists(String brand, String name) {
+        return prodRepo.existsByBrandAndName(brand, name);
     }
 
     private Product createProductFromRequest(AddProductRequest request, Category category) {

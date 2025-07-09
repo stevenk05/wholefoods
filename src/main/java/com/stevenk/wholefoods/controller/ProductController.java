@@ -1,6 +1,7 @@
 package com.stevenk.wholefoods.controller;
 
 import com.stevenk.wholefoods.dto.ProductDTO;
+import com.stevenk.wholefoods.exceptions.AlreadyExistsException;
 import com.stevenk.wholefoods.exceptions.ResourceNotFoundException;
 import com.stevenk.wholefoods.model.Category;
 import com.stevenk.wholefoods.model.Product;
@@ -14,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -51,8 +51,8 @@ public class ProductController {
         try {
             Product prod = prodService.addProduct(product);
             return ResponseEntity.ok(new ApiResponse("Add product success", prod));
-        } catch (Exception e) {
-            return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
