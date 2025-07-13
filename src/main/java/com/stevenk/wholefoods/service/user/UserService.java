@@ -9,6 +9,9 @@ import com.stevenk.wholefoods.requests.CreateUserRequest;
 import com.stevenk.wholefoods.requests.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +22,7 @@ public class UserService implements IUserService{
 
     private final UserRepository userRepo;
     private final ModelMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User getUserById(Long id) {
@@ -32,7 +36,7 @@ public class UserService implements IUserService{
                 .map(user -> {
                     User newUser = new User();
                     newUser.setEmail(request.getEmail());
-                    newUser.setPassword(request.getPassword());
+                    newUser.setPassword(passwordEncoder.encode(request.getPassword()));
                     newUser.setFirstname(request.getFirstname());
                     newUser.setLastname(request.getLastname());
                     return userRepo.save(newUser);
@@ -59,5 +63,12 @@ public class UserService implements IUserService{
     @Override
     public UserDTO convertToDTO(User user) {
         return mapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        return userRepo.findByEmail(email);
     }
 }

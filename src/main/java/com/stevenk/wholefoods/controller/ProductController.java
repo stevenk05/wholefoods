@@ -11,6 +11,7 @@ import com.stevenk.wholefoods.response.ApiResponse;
 import com.stevenk.wholefoods.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,16 +47,26 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/addPROD")
     public ResponseEntity<ApiResponse> addProduct(@RequestBody AddProductRequest product) {
+        System.out.print("Received request with product: {}" + product);
         try {
+            System.out.print("Attempting to add product with name: {} and brand: {}" + product.getName() + product.getBrand());
             Product prod = prodService.addProduct(product);
+            System.out.print("Product added successfully with ID: {}" + prod.getId());
             return ResponseEntity.ok(new ApiResponse("Add product success", prod));
         } catch (AlreadyExistsException e) {
+            System.out.print("Product already exists: {}" + e.getMessage());
             return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
+        } catch (Exception e) {
+            System.out.print("Error adding product: {}" + e.getMessage() + e);
+            return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("Error adding product: " + e.getMessage(), null));
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{productId}/updatePROD")
     public  ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductUpdateRequest request, @PathVariable Long productId) {
         try {
@@ -66,6 +77,7 @@ public class ProductController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{productId}/deletePROD")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long productId) {
         try {

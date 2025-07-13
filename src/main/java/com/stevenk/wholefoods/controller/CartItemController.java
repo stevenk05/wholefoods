@@ -10,6 +10,7 @@ import com.stevenk.wholefoods.service.cart.ICartItemService;
 import com.stevenk.wholefoods.service.cart.ICartService;
 import com.stevenk.wholefoods.service.user.IUserService;
 import com.stevenk.wholefoods.service.user.UserService;
+import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +33,7 @@ public class CartItemController {
                                                    @RequestParam Long prodId,
                                                    @RequestParam Integer quantity) {
         try {
-            User user = userService.getUserById(1L);
+            User user = userService.getAuthenticatedUser();
             Cart cart = cartService.getCartByUserId(user.getId());
             if (cart == null) {
                 cart = cartService.initializeCart(user);
@@ -44,6 +45,8 @@ public class CartItemController {
             return ResponseEntity.ok(new ApiResponse("Item added to cart", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (JwtException e){
+            return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
         }
     }
 

@@ -69,3 +69,7 @@ build/
 #Other
 wrapper/
 pom.xml
+mvnw.cmd
+mvnw
+HELP.md
+/target
